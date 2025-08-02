@@ -1,4 +1,5 @@
-﻿using AdformAPI.Repositories;
+﻿using AdformAPI.Models;
+using AdformAPI.Repositories;
 
 namespace AdformAPI.Services
 {

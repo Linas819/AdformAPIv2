@@ -1,4 +1,5 @@
 ﻿using AdformAPI.AdformDB;
+using System.Data.Common;
 
 namespace AdformAPI.Repositories
 {
@@ -8,6 +9,16 @@ namespace AdformAPI.Repositories
         public OrderRepository(AdformDatabaseContext dbContext)
         {
             this.dbContext = dbContext;
+        }
+        public string SaveAdformDatabaseChange(string message)
+        {
+            try
+            {
+                dbContext.SaveChanges();
+            } catch (DbException ex){
+                message = ex.Message;
+            }
+            return message;
         }
     }
 }

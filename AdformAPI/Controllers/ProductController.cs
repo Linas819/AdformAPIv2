@@ -1,4 +1,6 @@
-﻿using AdformAPI.Services;
+﻿using AdformAPI.AdformDB;
+using AdformAPI.Models;
+using AdformAPI.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AdformAPI.Controllers
@@ -13,11 +15,41 @@ namespace AdformAPI.Controllers
             this.productService = productService;
         }
         [HttpGet]
-        public IActionResult Index()
+        public IActionResult GetProducts(string productName = "", int page = 0, int pageSize = 0)
         {
+            List<ProductDetail> products = productService.GetProducts(productName, page, pageSize);
             return (Ok(new
             {
-                Success = true
+                Products = products
+            }));
+        }
+        [HttpGet]
+        [Route("discount")]
+        public IActionResult GetDiscount(int discountId)
+        {
+            ProductDiscount productDiscount = productService.GetProductDiscount(discountId);
+            return (Ok(new
+            {
+                ProductDiscount = productDiscount
+            }));
+        }
+        [HttpPost]
+        public IActionResult CreateProduct(NewProduct newProduct)
+        {
+            string message = productService.CreateProduct(newProduct);
+            return (Ok(new
+            {
+                Message = message
+            }));
+        }
+        [HttpPost]
+        [Route("discount")]
+        public IActionResult CreateProductDiscount(NewProductDiscount newProductDiscount)
+        {
+            string message = productService.CreateProductDiscount(newProductDiscount);
+            return (Ok(new
+            {
+                Message = message
             }));
         }
     }

@@ -32,8 +32,8 @@ Log.Logger = new LoggerConfiguration()
     .WriteTo.File("logs/AdFormLog-.txt", rollingInterval: RollingInterval.Day)
     .CreateLogger();
 
-var connectionString = builder.Configuration.GetConnectionString("PostgreContainer") ??
-        throw new InvalidOperationException("Connection string 'PostgreContainer' not found");
+var connectionString = builder.Configuration.GetConnectionString("LocalDatabase") ??
+        throw new InvalidOperationException("Connection string 'LocalDatabase' not found");
 builder.Services.AddDbContext<AdformDatabaseContext>(options => options.UseNpgsql(connectionString));
 
 builder.Services.AddScoped<OrderService, OrderService>();
