@@ -39,7 +39,7 @@ var connectionString = builder.Configuration.GetConnectionString("LocalDatabase"
 builder.Services.AddDbContext<AdformDatabaseContext>(options => options.UseNpgsql(connectionString));
 
 builder.Services.AddGraphQLServer()
-    .AddQueryType<CreateProductQuery>()
+    .AddQueryType<CreateProductMutation>()
     .AddMutationType<Product>();
 
 builder.Services.AddScoped<OrderService, OrderService>();

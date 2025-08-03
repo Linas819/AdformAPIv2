@@ -58,17 +58,19 @@ namespace AdformAPI.Repositories
             discount.MinimalQuantity = newProductDiscount.MinimalQuantity;
             dbContext.Discounts.Add(discount);
         }
-        public string SaveAdformDatabaseChange(string message)
+        public DatabaseSaveChangesResponse SaveAdformDatabaseChange()
         {
+            DatabaseSaveChangesResponse response = new DatabaseSaveChangesResponse();
             try
             {
                 dbContext.SaveChanges();
             }
             catch (DbException ex)
             {
-                message = ex.Message;
+                response.StatusCode = 400;
+                response.Message = ex.Message;
             }
-            return message;
+            return response;
         }
     }
 }

@@ -37,19 +37,19 @@ namespace AdformAPI.Services
                 (x.ProductPrice * ((double)x.DiscountPercentage / 100))));
             return productDiscount;
         }
-        public string CreateProduct(NewProduct newProduct)
+        public DatabaseSaveChangesResponse CreateProduct(NewProduct newProduct)
         {
-            string message = "Product created";
+            DatabaseSaveChangesResponse responce = new DatabaseSaveChangesResponse();
             productRepository.CreateProduct(newProduct);
-            message = productRepository.SaveAdformDatabaseChange(message);
-            return message;
+            responce = productRepository.SaveAdformDatabaseChange();
+            return responce;
         }
-        public string CreateProductDiscount(NewProductDiscount newProductDiscount)
+        public DatabaseSaveChangesResponse CreateProductDiscount(NewProductDiscount newProductDiscount)
         {
-            string message = "Product discount created";
+            DatabaseSaveChangesResponse response = new DatabaseSaveChangesResponse();
             productRepository.CreateProductDiscount(newProductDiscount);
-            message = productRepository.SaveAdformDatabaseChange(message);
-            return message;
+            response = productRepository.SaveAdformDatabaseChange();
+            return response;
         }
     }
 }

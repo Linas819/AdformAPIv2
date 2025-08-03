@@ -1,6 +1,6 @@
 ﻿namespace AdformAPI.Models
 {
-    public class OrderLineDetail
+    public class OrderlineDetail
     {
         public string OrderName { get; set; }
         public int ProductId { get; set; }

@@ -4,17 +4,17 @@ using AdformAPI.Repositories;
 
 namespace AdformAPI.GraphQL
 {
-    public class CreateProductQuery
+    public class CreateProductMutation
     {
         private ProductRepository repository;
-        public CreateProductQuery(ProductRepository repository)
+        public CreateProductMutation(ProductRepository repository)
         {
             this.repository = repository;
         }
         public Product CreateProduct(NewProduct newProduct)
         {
             Product product = repository.CreateProduct(newProduct);
-            repository.SaveAdformDatabaseChange("");
+            repository.SaveAdformDatabaseChange();
             return product;
         }
     }

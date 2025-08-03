@@ -36,20 +36,20 @@ namespace AdformAPI.Controllers
         [HttpPost]
         public IActionResult CreateProduct(NewProduct newProduct)
         {
-            string message = productService.CreateProduct(newProduct);
+            DatabaseSaveChangesResponse responce = productService.CreateProduct(newProduct);
             return (Ok(new
             {
-                Message = message
+                Message = responce.Message
             }));
         }
         [HttpPost]
         [Route("discount")]
         public IActionResult CreateProductDiscount(NewProductDiscount newProductDiscount)
         {
-            string message = productService.CreateProductDiscount(newProductDiscount);
+            DatabaseSaveChangesResponse responce = productService.CreateProductDiscount(newProductDiscount);
             return (Ok(new
             {
-                Message = message
+                Message = responce.Message
             }));
         }
     }

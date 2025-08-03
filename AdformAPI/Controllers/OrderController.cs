@@ -15,12 +15,22 @@ namespace AdformAPI.Controllers
             this.orderService = orderService;
         }
         [HttpGet]
+        [Route("invoice")]
         public IActionResult GetOrderInvoice(int orderId)
         {
             OrderInvoice orderInvoice = orderService.GetOrderInvoice(orderId);
             return (Ok(new
             {
                 OrderInvoice = orderInvoice
+            }));
+        }
+        [HttpPost]
+        public IActionResult CreateOrder(NewOrder newOrder)
+        {
+            DatabaseSaveChangesResponse response = orderService.CreateOrder(newOrder);
+            return (Ok(new
+            {
+                Message = response.Message
             }));
         }
     }

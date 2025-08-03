@@ -12,15 +12,15 @@ namespace AdformAPI.Repositories
         {
             this.dbContext = dbContext;
         }
-        public List<OrderLineDetail> GetOrderlines(int orderId)
+        public List<OrderlineDetail> GetOrderlines(int orderId)
         {
-            List <OrderLineDetail> orderLineDetails = (from o in dbContext.Orders
+            List <OrderlineDetail> orderLineDetails = (from o in dbContext.Orders
                          join ol in dbContext.Orderlines on o.OrderId equals ol.OrderId
                          join p in dbContext.Products on ol.ProductId equals p.ProductId
                          join d in dbContext.Discounts on p.ProductId equals d.ProductId into discount
                          from disc in discount.DefaultIfEmpty()
                          where o.OrderId == orderId
-                         select new OrderLineDetail
+                         select new OrderlineDetail
                          {
                              OrderName = o.OrderName,
                              ProductId = p.ProductId,
@@ -32,15 +32,37 @@ namespace AdformAPI.Repositories
                          }).ToList();
             return orderLineDetails;
         }
-        public string SaveAdformDatabaseChange(string message)
+        public Order CreateOrder(string orderName)
         {
+            Order order = new Order();
+            order.OrderName = orderName;
+            dbContext.Orders.Add(order);
+            return order;
+        }
+        public void CreateOrderlines(int orderId, int[] productIds, int[] productQuantities)
+        {
+            List<Orderline> orderlines = new List<Orderline>();
+            for (int i = 0; i < productIds.Count(); i++)
+            {
+                orderlines.Add(new Orderline {
+                    OrderId = orderId,
+                    ProductId = productIds[i],
+                    ProductQuantity = productQuantities[i]
+                });
+            }
+            dbContext.AddRange(orderlines);
+        }
+        public DatabaseSaveChangesResponse SaveAdformDatabaseChange()
+        {
+            DatabaseSaveChangesResponse response = new DatabaseSaveChangesResponse();
             try
             {
                 dbContext.SaveChanges();
             } catch (DbException ex){
-                message = ex.Message;
+                response.StatusCode = 400;
+                response.Message = ex.Message;
             }
-            return message;
+            return response;
         }
     }
 }

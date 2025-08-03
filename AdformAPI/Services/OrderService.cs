@@ -1,4 +1,5 @@
-﻿using AdformAPI.Models;
+﻿using AdformAPI.AdformDB;
+using AdformAPI.Models;
 using AdformAPI.Repositories;
 
 namespace AdformAPI.Services
@@ -12,11 +13,11 @@ namespace AdformAPI.Services
         }
         public OrderInvoice GetOrderInvoice(int orderId)
         {
-            List<OrderLineDetail> orderLineDetails = repository.GetOrderlines(orderId);
+            List<OrderlineDetail> orderLineDetails = repository.GetOrderlines(orderId);
             OrderInvoice orderInvoice = new OrderInvoice();
             orderInvoice.OrderId = orderId;
             orderInvoice.OrderName = orderLineDetails.First().OrderName;
-            foreach (OrderLineDetail line in orderLineDetails) {
+            foreach (OrderlineDetail line in orderLineDetails) {
                 orderInvoice.Products.Add(new OrderInvoiceProductDetail { 
                     ProductId = line.ProductId,
                     ProductName = line.ProductName,
@@ -28,6 +29,15 @@ namespace AdformAPI.Services
             }
             orderInvoice.TotalPrice = orderInvoice.Products.Sum(x => DiscountedPrice(x.ProductPrice, x.DiscountPercentage, x.DiscountMinimalQuantity, x.ProductQuantity ));
             return orderInvoice;
+        }
+        public DatabaseSaveChangesResponse CreateOrder(NewOrder newOrder)
+        {
+            DatabaseSaveChangesResponse response = new DatabaseSaveChangesResponse();
+            Order order = repository.CreateOrder(newOrder.OrderName);
+            response = repository.SaveAdformDatabaseChange();
+            repository.CreateOrderlines(order.OrderId, newOrder.ProductIds, newOrder.ProductQuantities);
+            response = repository.SaveAdformDatabaseChange();
+            return response;
         }
         public double DiscountedPrice(double productPrice, int discountPercentage, int minimalQuantity, int productQuantity)
         {
