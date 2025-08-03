@@ -1,6 +1,5 @@
 ﻿using AdformAPI.Models;
 using AdformAPI.Services;
-using Azure;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AdformAPI.Controllers
@@ -13,6 +12,15 @@ namespace AdformAPI.Controllers
         public OrderController(OrderService orderService)
         {
             this.orderService = orderService;
+        }
+        [HttpGet]
+        public IActionResult GetOrders(int page = 0, int pageSize = 0, int productPage = 0, int productPageSize = 0) {
+            List<OrderDetail> orders = new List<OrderDetail>();
+            orders = orderService.GetOrders(page, pageSize, productPage, productPageSize);
+            return (Ok(new
+            {
+                Orders = orders,
+            }));
         }
         [HttpGet]
         [Route("invoice")]

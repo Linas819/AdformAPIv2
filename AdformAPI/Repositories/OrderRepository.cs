@@ -12,6 +12,27 @@ namespace AdformAPI.Repositories
         {
             this.dbContext = dbContext;
         }
+        public List<Order> GetOrders(int limit)
+        {
+            List<Order> orders = new List<Order>();
+            orders = limit == 0 ? dbContext.Orders.ToList() : orders = dbContext.Orders.Take(limit).ToList();
+            return orders;
+        }
+        public List<OrderProductDetail> GetOrderProducts(int orderId, int limit)
+        {
+            var orderProductsQuery = (from o in dbContext.Orders
+                                        join ol in dbContext.Orderlines on o.OrderId equals ol.OrderId
+                                        join p in dbContext.Products on ol.ProductId equals p.ProductId
+                                        where o.OrderId == orderId
+                                        select new OrderProductDetail {
+                                            ProductId = p.ProductId,
+                                            ProductName = p.ProductName,
+                                            ProductPrice = p.ProductPrice,
+                                            ProductQuantity = ol.ProductQuantity
+                                        }) as IQueryable<OrderProductDetail>;
+            List<OrderProductDetail> orderProducts = limit == 0 ? orderProductsQuery.ToList() : orderProductsQuery.Take(limit).ToList();
+            return orderProducts;
+        }
         public List<OrderlineDetail> GetOrderlines(int orderId)
         {
             List <OrderlineDetail> orderLineDetails = (from o in dbContext.Orders

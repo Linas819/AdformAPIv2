@@ -11,6 +11,39 @@ namespace AdformAPI.Services
         {
             this.repository = repository;
         }
+        public List<OrderDetail> GetOrders(int page, int pageSize, int productPage, int productPageSize)
+        {
+            List<OrderDetail> orders = new List<OrderDetail>();
+            List<Order> ords = repository.GetOrders(page * pageSize);
+            foreach (Order ord in ords) 
+            {
+                OrderDetail order = new OrderDetail();
+                List<OrderProductDetail> orderProducts = repository.GetOrderProducts(ord.OrderId, productPage * productPageSize);
+                if (productPage != 0 && productPageSize != 0)
+                {
+                    int orderProductsCount = orderProducts.Count;
+                    int totalPages = (int)Math.Ceiling((decimal)orderProductsCount / pageSize);
+                    orderProducts = orderProducts
+                        .Skip((page - 1) * pageSize)
+                        .Take(pageSize)
+                        .ToList();
+                }
+                order.OrderId = ord.OrderId;
+                order.OrderName = ord.OrderName;
+                order.OrderProducts = orderProducts;
+                orders.Add(order);
+            }
+            if (page != 0 && pageSize != 0)
+            {
+                int orderCount = orders.Count;
+                int totalPages = (int)Math.Ceiling((decimal)orderCount / pageSize);
+                orders = orders
+                    .Skip((page - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToList();
+            }
+            return orders;
+        }
         public OrderInvoice GetOrderInvoice(int orderId)
         {
             List<OrderlineDetail> orderLineDetails = repository.GetOrderlines(orderId);
