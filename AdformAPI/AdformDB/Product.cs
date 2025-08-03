@@ -9,7 +9,7 @@ public partial class Product
 
     public string ProductName { get; set; } = null!;
 
-    public double? ProductPrice { get; set; }
+    public double ProductPrice { get; set; }
 
     public virtual ICollection<Discount> Discounts { get; set; } = new List<Discount>();
 

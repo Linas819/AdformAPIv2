@@ -1,4 +1,5 @@
-﻿using AdformAPI.Services;
+﻿using AdformAPI.Models;
+using AdformAPI.Services;
 using Azure;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,11 +15,12 @@ namespace AdformAPI.Controllers
             this.orderService = orderService;
         }
         [HttpGet]
-        public IActionResult Index()
+        public IActionResult GetOrderInvoice(int orderId)
         {
+            OrderInvoice orderInvoice = orderService.GetOrderInvoice(orderId);
             return (Ok(new
             {
-                Success = true
+                OrderInvoice = orderInvoice
             }));
         }
     }

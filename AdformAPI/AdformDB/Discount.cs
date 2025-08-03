@@ -9,9 +9,9 @@ public partial class Discount
 
     public int ProductId { get; set; }
 
-    public int? DiscountPercentage { get; set; }
+    public int DiscountPercentage { get; set; }
 
-    public int? MinimalQuantity { get; set; }
+    public int MinimalQuantity { get; set; }
 
     public virtual Product Product { get; set; } = null!;
 }

@@ -37,7 +37,7 @@ Additionally, the system should provide capabilities to generate reports about o
 * **API Documentation** generated from code (hint - `Swagger`);
 * **Containerization/deployment** (hint - `Docker Compose`);
 * Code is structured using some known **architecture** (e.g., NTier, Onion, etc.);
-* **Continuous integration** (CI. hint - `GitHub Actions`;
+* **Continuous integration** (CI. hint - `GitHub Actions`);
 * **Progress of your work** (hint - `commits strategy`);
 * **Comments/thoughts** on the decisions you made;
 * **Logging** (hint: `Serilog`);
@@ -61,7 +61,8 @@ The task is not made to be completed in the period of 8 hours, and no one expect
 
 ## Tasks and time duration
 Database set up: 30 minutes.</br>
-.NET Web API Project set up: 1 hour. 
+.NET Web API Project set up: 1 hour.</br>
+Product and discount queries: 2 hours.
 
 ### DB Scafold
 dotnet ef dbcontext scaffold "Server=localhost;Port=5432;UserId=postgres;Password=admin;Database=AdformDatabase;" Npgsql.EntityFrameworkCore.PostgreSQL -o AdformDB

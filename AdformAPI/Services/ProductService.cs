@@ -32,7 +32,7 @@ namespace AdformAPI.Services
             ProductDiscount productDiscount = new ProductDiscount();
             productDiscount.ProductName = orderLines.First().ProductName;
             productDiscount.DiscountPercentage = orderLines.First().DiscountPercentage;
-            productDiscount.OrderCount = orderLines.Select(x => x.OrderId).Distinct().Count();
+            productDiscount.OrderCount = orderLines.Where(x => x.OrderId != 0).Select(x => x.OrderId).Distinct().Count();
             productDiscount.TotalAmount = orderLines.Sum(x => x.ProductQuantity * (x.ProductPrice - 
                 (x.ProductPrice * ((double)x.DiscountPercentage / 100))));
             return productDiscount;

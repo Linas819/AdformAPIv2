@@ -11,7 +11,7 @@ public partial class Orderline
 
     public int ProductId { get; set; }
 
-    public int? ProductQuantity { get; set; }
+    public int ProductQuantity { get; set; }
 
     public virtual Order Order { get; set; } = null!;
 

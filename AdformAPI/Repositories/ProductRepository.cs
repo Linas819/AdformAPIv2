@@ -30,16 +30,16 @@ namespace AdformAPI.Repositories
         {
             List<DiscountProductOrderLine> orderLine = (from d in dbContext.Discounts
                          join p in dbContext.Products on d.ProductId equals p.ProductId
-                         join ol in dbContext.Orderlines on p.ProductId equals ol.ProductId
-                         where d.DiscountId == discountId && ol.ProductQuantity > d.MinimalQuantity
+                         join ol in dbContext.Orderlines on p.ProductId equals ol.ProductId into ordline
+                         from ordl in ordline.DefaultIfEmpty()
+                         where d.DiscountId == discountId && (ordl == null || ordl.ProductQuantity > d.MinimalQuantity)
                          select new DiscountProductOrderLine
                          {
                              ProductName = p.ProductName,
                              DiscountPercentage = d.DiscountPercentage,
-                             ProductQuantity = ol.ProductQuantity,
-                             OrderId = ol.OrderId,
+                             ProductQuantity = ordl != null ? ordl.ProductQuantity : 0,
+                             OrderId = ordl != null ? ordl.OrderId : 0,
                              ProductPrice = p.ProductPrice
-
                          }).ToList();
             return orderLine;
         }
