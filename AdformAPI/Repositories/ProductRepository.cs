@@ -1,7 +1,6 @@
 ﻿using AdformAPI.AdformDB;
 using AdformAPI.Models;
 using System.Data.Common;
-using System.Linq;
 
 namespace AdformAPI.Repositories
 {
@@ -43,12 +42,13 @@ namespace AdformAPI.Repositories
                          }).ToList();
             return orderLine;
         }
-        public void CreateProduct(NewProduct newProduct)
+        public Product CreateProduct(NewProduct newProduct)
         {
             Product product = new Product();
             product.ProductName = newProduct.ProductName;
             product.ProductPrice = newProduct.ProductPrice;
             dbContext.Products.Add(product);
+            return product;
         }
         public void CreateProductDiscount(NewProductDiscount newProductDiscount)
         {

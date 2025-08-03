@@ -1,10 +1,12 @@
 using AdformAPI.AdformDB;
+using AdformAPI.GraphQL;
 using AdformAPI.Repositories;
 using AdformAPI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using System.Reflection;
+using Path = System.IO.Path;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,6 +38,10 @@ var connectionString = builder.Configuration.GetConnectionString("LocalDatabase"
         throw new InvalidOperationException("Connection string 'LocalDatabase' not found");
 builder.Services.AddDbContext<AdformDatabaseContext>(options => options.UseNpgsql(connectionString));
 
+builder.Services.AddGraphQLServer()
+    .AddQueryType<CreateProductQuery>()
+    .AddMutationType<Product>();
+
 builder.Services.AddScoped<OrderService, OrderService>();
 builder.Services.AddScoped<OrderRepository, OrderRepository>();
 builder.Services.AddScoped<ProductService, ProductService>();
@@ -55,5 +61,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapGraphQL("/graphql");
 
 app.Run();
