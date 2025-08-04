@@ -1,5 +1,7 @@
 ﻿using AdformAPI.AdformDB;
+using AdformAPI.Exceptions;
 using AdformAPI.Models;
+using Microsoft.EntityFrameworkCore;
 using System.Data.Common;
 
 namespace AdformAPI.Repositories
@@ -65,10 +67,11 @@ namespace AdformAPI.Repositories
             {
                 dbContext.SaveChanges();
             }
-            catch (DbException ex)
+            catch (DbUpdateException ex)
             {
-                response.StatusCode = 400;
+                response.StatusCode = ex.HResult;
                 response.Message = ex.Message;
+                throw new ApiException(400, ex.InnerException.ToString());
             }
             return response;
         }

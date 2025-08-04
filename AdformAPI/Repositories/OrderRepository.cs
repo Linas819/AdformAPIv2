@@ -82,6 +82,7 @@ namespace AdformAPI.Repositories
             } catch (DbException ex){
                 response.StatusCode = 400;
                 response.Message = ex.Message;
+                throw new Exception(ex.Message);
             }
             return response;
         }

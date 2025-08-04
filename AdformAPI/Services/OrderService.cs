@@ -1,4 +1,5 @@
 ﻿using AdformAPI.AdformDB;
+using AdformAPI.Exceptions;
 using AdformAPI.Models;
 using AdformAPI.Repositories;
 
@@ -13,12 +14,18 @@ namespace AdformAPI.Services
         }
         public List<OrderDetail> GetOrders(int page, int pageSize, int productPage, int productPageSize)
         {
+            if (page < 0 || pageSize < 0 || productPage < 0 || productPageSize < 0)
+                throw new ApiException(400, "(Product) Page size cannot be lower than 0");
             List<OrderDetail> orders = new List<OrderDetail>();
             List<Order> ords = repository.GetOrders(page * pageSize);
+            if(ords.Count() == 0)
+                throw new ApiException(404, "No orders found");
             foreach (Order ord in ords) 
             {
                 OrderDetail order = new OrderDetail();
                 List<OrderProductDetail> orderProducts = repository.GetOrderProducts(ord.OrderId, productPage * productPageSize);
+                if (orderProducts.Count() == 0)
+                    throw new ApiException(404, "No products found from Order Id: " + ord.OrderId.ToString());
                 if (productPage != 0 && productPageSize != 0)
                 {
                     int orderProductsCount = orderProducts.Count;
@@ -47,6 +54,8 @@ namespace AdformAPI.Services
         public OrderInvoice GetOrderInvoice(int orderId)
         {
             List<OrderlineDetail> orderLineDetails = repository.GetOrderlines(orderId);
+            if (orderLineDetails.Count() == 0)
+                throw new ApiException(404, "Order Id: " + orderId + " has no products");
             OrderInvoice orderInvoice = new OrderInvoice();
             orderInvoice.OrderId = orderId;
             orderInvoice.OrderName = orderLineDetails.First().OrderName;
@@ -65,11 +74,16 @@ namespace AdformAPI.Services
         }
         public DatabaseSaveChangesResponse CreateOrder(NewOrder newOrder)
         {
+            if (newOrder.ProductIds.Count() != newOrder.ProductQuantities.Count())
+                throw new ApiException(400, "Product IDs count must match product quantities count");
             DatabaseSaveChangesResponse response = new DatabaseSaveChangesResponse();
             Order order = repository.CreateOrder(newOrder.OrderName);
             response = repository.SaveAdformDatabaseChange();
-            repository.CreateOrderlines(order.OrderId, newOrder.ProductIds, newOrder.ProductQuantities);
-            response = repository.SaveAdformDatabaseChange();
+            if (response.StatusCode == 200)
+            {
+                repository.CreateOrderlines(order.OrderId, newOrder.ProductIds, newOrder.ProductQuantities);
+                response = repository.SaveAdformDatabaseChange();
+            }
             return response;
         }
         public double DiscountedPrice(double productPrice, int discountPercentage, int minimalQuantity, int productQuantity)

@@ -1,4 +1,5 @@
 using AdformAPI.AdformDB;
+using AdformAPI.Exceptions;
 using AdformAPI.GraphQL;
 using AdformAPI.Repositories;
 using AdformAPI.Services;
@@ -57,6 +58,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseAuthorization();
 
