@@ -5,24 +5,21 @@ namespace AdformAPI.Exceptions
 {
     public class ExceptionMiddleware
     {
-        private readonly RequestDelegate _next;
-        private readonly ILogger<ExceptionMiddleware> _logger;
+        private readonly RequestDelegate next;
 
-        public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger)
+        public ExceptionMiddleware(RequestDelegate next)
         {
-            _next = next ?? throw new ArgumentNullException(nameof(next));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            this.next = next;
         }
-
         public async Task InvokeAsync(HttpContext context)
         {
             try
             {
-                await _next(context);
+                await next(context);
             }
             catch (ApiException ex)
             {
-                _logger.LogError(ex, ex.Message);
+                Log.Error(ex.Message);
 
                 context.Response.StatusCode = ex.StatusCode;
                 context.Response.ContentType = "application/json";
@@ -37,8 +34,7 @@ namespace AdformAPI.Exceptions
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, ex.Message);
-
+                Log.Error(ex, ex.Message);
                 context.Response.StatusCode = 500;
                 context.Response.ContentType = "application/json";
 

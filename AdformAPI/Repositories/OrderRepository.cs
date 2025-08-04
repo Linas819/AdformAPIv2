@@ -1,6 +1,6 @@
 ﻿using AdformAPI.AdformDB;
+using AdformAPI.Exceptions;
 using AdformAPI.Models;
-using System.Collections.Generic;
 using System.Data.Common;
 
 namespace AdformAPI.Repositories
@@ -12,15 +12,13 @@ namespace AdformAPI.Repositories
         {
             this.dbContext = dbContext;
         }
-        public List<Order> GetOrders(int limit)
+        public IQueryable<Order> GetOrders()
         {
-            List<Order> orders = new List<Order>();
-            orders = limit == 0 ? dbContext.Orders.ToList() : orders = dbContext.Orders.Take(limit).ToList();
-            return orders;
+            return dbContext.Orders.AsQueryable<Order>();
         }
-        public List<OrderProductDetail> GetOrderProducts(int orderId, int limit)
+        public IQueryable<OrderProductDetail> GetOrderProducts(int orderId, int limit, int pagesize)
         {
-            var orderProductsQuery = (from o in dbContext.Orders
+            return (from o in dbContext.Orders
                                         join ol in dbContext.Orderlines on o.OrderId equals ol.OrderId
                                         join p in dbContext.Products on ol.ProductId equals p.ProductId
                                         where o.OrderId == orderId
@@ -30,12 +28,10 @@ namespace AdformAPI.Repositories
                                             ProductPrice = p.ProductPrice,
                                             ProductQuantity = ol.ProductQuantity
                                         }) as IQueryable<OrderProductDetail>;
-            List<OrderProductDetail> orderProducts = limit == 0 ? orderProductsQuery.ToList() : orderProductsQuery.Take(limit).ToList();
-            return orderProducts;
         }
         public List<OrderlineDetail> GetOrderlines(int orderId)
         {
-            List <OrderlineDetail> orderLineDetails = (from o in dbContext.Orders
+            return (from o in dbContext.Orders
                          join ol in dbContext.Orderlines on o.OrderId equals ol.OrderId
                          join p in dbContext.Products on ol.ProductId equals p.ProductId
                          join d in dbContext.Discounts on p.ProductId equals d.ProductId into discount
@@ -51,7 +47,6 @@ namespace AdformAPI.Repositories
                              DiscountPercentage = disc != null ? (int)disc.DiscountPercentage : 0,
                              DiscountMinimalQuantity = disc != null ? (int)disc.MinimalQuantity : 0
                          }).ToList();
-            return orderLineDetails;
         }
         public Order CreateOrder(string orderName)
         {
@@ -80,9 +75,9 @@ namespace AdformAPI.Repositories
             {
                 dbContext.SaveChanges();
             } catch (DbException ex){
-                response.StatusCode = 400;
-                response.Message = ex.Message;
-                throw new Exception(ex.Message);
+                response.StatusCode = 803;
+                response.Message = ex.InnerException.Message;
+                throw new ApiException(response.StatusCode, response.Message);
             }
             return response;
         }

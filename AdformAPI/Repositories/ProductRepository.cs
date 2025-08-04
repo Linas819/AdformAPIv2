@@ -2,7 +2,6 @@
 using AdformAPI.Exceptions;
 using AdformAPI.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Data.Common;
 
 namespace AdformAPI.Repositories
 {
@@ -13,19 +12,16 @@ namespace AdformAPI.Repositories
         {
             this.dbContext = dbContext;
         }
-        public List<ProductDetail> GetProducts(string productName, int limit)
+        public IQueryable<ProductDetail> GetProducts(string productName)
         {
-            List<ProductDetail> products = new List<ProductDetail>();
-            var productsQueryable = (from p in dbContext.Products
-                                     where string.IsNullOrEmpty(productName) || p.ProductName.ToLower().Contains(productName.ToLower())
-                                     select new ProductDetail
-                                        {
-                                            ProductId = p.ProductId,
-                                            ProductName = p.ProductName,
-                                            ProductPrice = p.ProductPrice
-                                        }) as IQueryable<ProductDetail>;
-            products = limit != 0 ? productsQueryable.Take(limit).ToList() : productsQueryable.ToList();
-            return products;
+            return (from p in dbContext.Products
+                    where string.IsNullOrEmpty(productName) || p.ProductName.ToLower().Contains(productName.ToLower())
+                    select new ProductDetail
+                    {
+                        ProductId = p.ProductId,
+                        ProductName = p.ProductName,
+                        ProductPrice = p.ProductPrice
+                    }) as IQueryable<ProductDetail>;
         }
         public List<DiscountProductOrderLine> GetDiscountProductOrderLines(int discountId)
         {
@@ -69,9 +65,9 @@ namespace AdformAPI.Repositories
             }
             catch (DbUpdateException ex)
             {
-                response.StatusCode = ex.HResult;
-                response.Message = ex.Message;
-                throw new ApiException(400, ex.InnerException.ToString());
+                response.StatusCode = 803;
+                response.Message = ex.InnerException.Message;
+                throw new ApiException(response.StatusCode, response.Message);
             }
             return response;
         }

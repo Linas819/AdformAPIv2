@@ -2,6 +2,8 @@
 using AdformAPI.Exceptions;
 using AdformAPI.Models;
 using AdformAPI.Repositories;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 
 namespace AdformAPI.Services
 {
@@ -16,38 +18,34 @@ namespace AdformAPI.Services
         {
             if (page < 0 || pageSize < 0 || productPage < 0 || productPageSize < 0)
                 throw new ApiException(400, "(Product) Page size cannot be lower than 0");
+            int orderLimit = page * pageSize;
+            int productLimit = productPage * productPageSize;
             List<OrderDetail> orders = new List<OrderDetail>();
-            List<Order> ords = repository.GetOrders(page * pageSize);
-            if(ords.Count() == 0)
+            IQueryable<Order> ordsQuery = repository.GetOrders();
+            List<Order> ords = orderLimit == 0
+                ? ordsQuery.ToList()
+                : ordsQuery
+                    .Skip(orderLimit - pageSize) // Skips all the unssecary data
+                    .Take(pageSize)
+                    .ToList();
+            if (ords.Count() == 0)
                 throw new ApiException(404, "No orders found");
             foreach (Order ord in ords) 
             {
                 OrderDetail order = new OrderDetail();
-                List<OrderProductDetail> orderProducts = repository.GetOrderProducts(ord.OrderId, productPage * productPageSize);
+                IQueryable<OrderProductDetail> orderProductsQuery = repository.GetOrderProducts(ord.OrderId, productPage * productPageSize, productPageSize);
+                List<OrderProductDetail> orderProducts = productLimit == 0
+                    ? orderProductsQuery.ToList()
+                    : orderProductsQuery
+                        .Skip(productLimit - productPageSize) // Skips all the unssecary data
+                        .Take(productPageSize)
+                        .ToList();
                 if (orderProducts.Count() == 0)
                     throw new ApiException(404, "No products found from Order Id: " + ord.OrderId.ToString());
-                if (productPage != 0 && productPageSize != 0)
-                {
-                    int orderProductsCount = orderProducts.Count;
-                    int totalPages = (int)Math.Ceiling((decimal)orderProductsCount / pageSize);
-                    orderProducts = orderProducts
-                        .Skip((page - 1) * pageSize)
-                        .Take(pageSize)
-                        .ToList();
-                }
                 order.OrderId = ord.OrderId;
                 order.OrderName = ord.OrderName;
                 order.OrderProducts = orderProducts;
                 orders.Add(order);
-            }
-            if (page != 0 && pageSize != 0)
-            {
-                int orderCount = orders.Count;
-                int totalPages = (int)Math.Ceiling((decimal)orderCount / pageSize);
-                orders = orders
-                    .Skip((page - 1) * pageSize)
-                    .Take(pageSize)
-                    .ToList();
             }
             return orders;
         }
@@ -76,6 +74,8 @@ namespace AdformAPI.Services
         {
             if (newOrder.ProductIds.Count() != newOrder.ProductQuantities.Count())
                 throw new ApiException(400, "Product IDs count must match product quantities count");
+            if (newOrder.OrderName == string.Empty)
+                throw new ApiException(400, "Order name required");
             DatabaseSaveChangesResponse response = new DatabaseSaveChangesResponse();
             Order order = repository.CreateOrder(newOrder.OrderName);
             response = repository.SaveAdformDatabaseChange();

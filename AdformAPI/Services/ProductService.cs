@@ -13,19 +13,16 @@ namespace AdformAPI.Services
         }
         public List<ProductDetail> GetProducts(string productName, int page, int pageSize)
         {
-            int limit = page * pageSize;
-            List<ProductDetail> products = productRepository.GetProducts(productName, limit);
-            if (products.Count() == 0)
-                throw new ApiException(404, "No products found");
-            if (limit != 0)
-            {
-                int productsCount = products.Count;
-                int totalPages = (int)Math.Ceiling((decimal)productsCount / pageSize);
-                products = products
-                    .Skip((page -1) * pageSize)
+            int dataLimit = page * pageSize;
+            IQueryable<ProductDetail> productDetailsQuery = productRepository.GetProducts(productName);
+            List<ProductDetail> products = dataLimit == 0
+                ? productDetailsQuery.ToList()
+                : productDetailsQuery
+                    .Skip(dataLimit - pageSize)
                     .Take(pageSize)
                     .ToList();
-            }
+            if (products.Count() == 0)
+                throw new ApiException(404, "No products found");
             return products;
 
         }
