@@ -58,11 +58,17 @@ The task is not made to be completed in the period of 8 hours, and no one expect
 5. .NET 8.0
 6. Swagger API testing tool.
 7. Serilog.
+8. GraphQL (HotChocolate).
 
 ## Tasks and time duration
 Database set up: 30 minutes.</br>
 .NET Web API Project set up: 1 hour.</br>
 Product and discount queries: 2 hours.
+GraphQL integration: 1 hour.</br>
+Order queries: 3 hours.</br>
+ErrorMiddleware: 1 hour.</br>
+Swagger documentation: 2 hours.</br>
+Docker setup: 1 hour.
 
 ### DB Scafold
 dotnet ef dbcontext scaffold "Server=localhost;Port=5432;UserId=postgres;Password=admin;Database=AdformDatabase;" Npgsql.EntityFrameworkCore.PostgreSQL -o AdformDB

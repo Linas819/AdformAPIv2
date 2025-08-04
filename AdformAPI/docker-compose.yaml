@@ -1,0 +1,23 @@
+services:
+  postgresdb:
+    image: postgres:latest
+    container_name: postgresdb
+    ports:
+    - "5432:5432"
+    environment:
+      POSTGRES_DB: AdformDatabase
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+    volumes:
+    - ./DatabaseTables.sql:/docker-entrypoint-initdb.d/DatabaseTables.sql:ro
+  webapi:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    container_name: webapi
+    ports:
+    - "8080:8080"
+    depends_on:
+    - postgresdb
+    environment:
+    - ASPNETCORE_ENVIRONMENT=Development
