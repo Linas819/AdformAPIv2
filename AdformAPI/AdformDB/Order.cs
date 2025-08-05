@@ -9,5 +9,5 @@ public partial class Order
 
     public string OrderName { get; set; } = null!;
 
-    public virtual ICollection<Orderline> Orderlines { get; set; } = new List<Orderline>();
+    public virtual ICollection<OrderLine> OrderLines { get; set; } = new List<OrderLine>();
 }

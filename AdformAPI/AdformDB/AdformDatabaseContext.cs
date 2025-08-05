@@ -19,7 +19,7 @@ public partial class AdformDatabaseContext : DbContext
 
     public virtual DbSet<Order> Orders { get; set; }
 
-    public virtual DbSet<Orderline> Orderlines { get; set; }
+    public virtual DbSet<OrderLine> OrderLines { get; set; }
 
     public virtual DbSet<Product> Products { get; set; }
 
@@ -57,30 +57,32 @@ public partial class AdformDatabaseContext : DbContext
                 .HasColumnName("order_name");
         });
 
-        modelBuilder.Entity<Orderline>(entity =>
+        modelBuilder.Entity<OrderLine>(entity =>
         {
-            entity.HasKey(e => e.OrderlineId).HasName("orderlines_pkey");
+            entity.HasKey(e => e.OrderLineId).HasName("orderlines_pkey");
 
-            entity.ToTable("orderlines");
+            entity.ToTable("order_lines");
 
             entity.HasIndex(e => e.OrderId, "orderlines_order_id_idx");
 
             entity.HasIndex(e => e.ProductId, "orderlines_product_id_idx");
 
-            entity.Property(e => e.OrderlineId).HasColumnName("orderline_id");
+            entity.Property(e => e.OrderLineId)
+                .HasDefaultValueSql("nextval('orderlines_orderline_id_seq'::regclass)")
+                .HasColumnName("order_line_id");
             entity.Property(e => e.OrderId)
-                .ValueGeneratedOnAdd()
+                .HasDefaultValueSql("nextval('orderlines_order_id_seq'::regclass)")
                 .HasColumnName("order_id");
             entity.Property(e => e.ProductId)
-                .ValueGeneratedOnAdd()
+                .HasDefaultValueSql("nextval('orderlines_product_id_seq'::regclass)")
                 .HasColumnName("product_id");
             entity.Property(e => e.ProductQuantity).HasColumnName("product_quantity");
 
-            entity.HasOne(d => d.Order).WithMany(p => p.Orderlines)
+            entity.HasOne(d => d.Order).WithMany(p => p.OrderLines)
                 .HasForeignKey(d => d.OrderId)
                 .HasConstraintName("fk_order");
 
-            entity.HasOne(d => d.Product).WithMany(p => p.Orderlines)
+            entity.HasOne(d => d.Product).WithMany(p => p.OrderLines)
                 .HasForeignKey(d => d.ProductId)
                 .HasConstraintName("fk_product");
         });

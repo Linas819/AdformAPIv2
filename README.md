@@ -1,6 +1,12 @@
 # AdformAPIv2
 An updated version of the original [AdForm API task](https://github.com/Linas819/AdForm-API). Exercise: [Order Management API Exercise](https://github.com/erinev/order-management-api-exercise)
 
+# How to launch
+1. Open docker and in docker terminal navigate to the repository's folder.
+2. Execute command: ``` docker compose up ```
+3. Enter: ```https://localhost:8080/swagger/index.html``` into your browser.
+4. For GraphQL access enter: ```https://localhost:8080/graphql``` into your browser.
+
 # Problem statement
 
 A retailer company is looking to develop an order management system to streamline their order processing and product management. 

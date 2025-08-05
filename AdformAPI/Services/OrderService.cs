@@ -40,8 +40,6 @@ namespace AdformAPI.Services
                         .Skip(productLimit - productPageSize) // Skips all the unssecary data
                         .Take(productPageSize)
                         .ToList();
-                if (orderProducts.Count() == 0)
-                    throw new ApiException(404, "No products found from Order Id: " + ord.OrderId.ToString());
                 order.OrderId = ord.OrderId;
                 order.OrderName = ord.OrderName;
                 order.OrderProducts = orderProducts;
@@ -51,13 +49,13 @@ namespace AdformAPI.Services
         }
         public OrderInvoice GetOrderInvoice(int orderId)
         {
-            List<OrderlineDetail> orderLineDetails = repository.GetOrderlines(orderId);
+            List<OrderLineDetail> orderLineDetails = repository.GetOrderlines(orderId);
             if (orderLineDetails.Count() == 0)
                 throw new ApiException(404, "Order Id: " + orderId + " has no products");
             OrderInvoice orderInvoice = new OrderInvoice();
             orderInvoice.OrderId = orderId;
             orderInvoice.OrderName = orderLineDetails.First().OrderName;
-            foreach (OrderlineDetail line in orderLineDetails) {
+            foreach (OrderLineDetail line in orderLineDetails) {
                 orderInvoice.Products.Add(new OrderInvoiceProductDetail { 
                     ProductId = line.ProductId,
                     ProductName = line.ProductName,
@@ -74,6 +72,10 @@ namespace AdformAPI.Services
         {
             if (newOrder.ProductIds.Count() != newOrder.ProductQuantities.Count())
                 throw new ApiException(400, "Product IDs count must match product quantities count");
+            if(newOrder.ProductIds.Count() == 0)
+                throw new ApiException(400, "No product IDs provided");
+            if (newOrder.ProductQuantities.Count() == 0)
+                throw new ApiException(400, "No product quantities provided");
             if (newOrder.OrderName == string.Empty)
                 throw new ApiException(400, "Order name required");
             DatabaseSaveChangesResponse response = new DatabaseSaveChangesResponse();
@@ -81,7 +83,7 @@ namespace AdformAPI.Services
             response = repository.SaveAdformDatabaseChange();
             if (response.StatusCode == 200)
             {
-                repository.CreateOrderlines(order.OrderId, newOrder.ProductIds, newOrder.ProductQuantities);
+                repository.CreateOrderLines(order.OrderId, newOrder.ProductIds, newOrder.ProductQuantities);
                 response = repository.SaveAdformDatabaseChange();
             }
             return response;

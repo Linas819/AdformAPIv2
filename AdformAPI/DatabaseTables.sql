@@ -26,8 +26,8 @@ create table orders (
 	order_name varchar(50) not null
 );
 
-create table orderlines (
-	orderline_id serial primary key,
+create table order_lines (
+	order_line_id serial primary key,
 	order_id serial,
 	product_id serial,
 	product_quantity int not null,

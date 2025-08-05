@@ -1,6 +1,7 @@
 ﻿using AdformAPI.AdformDB;
 using AdformAPI.Exceptions;
 using AdformAPI.Models;
+using Microsoft.EntityFrameworkCore;
 using System.Data.Common;
 
 namespace AdformAPI.Repositories
@@ -19,7 +20,7 @@ namespace AdformAPI.Repositories
         public IQueryable<OrderProductDetail> GetOrderProducts(int orderId, int limit, int pagesize)
         {
             return (from o in dbContext.Orders
-                                        join ol in dbContext.Orderlines on o.OrderId equals ol.OrderId
+                                        join ol in dbContext.OrderLines on o.OrderId equals ol.OrderId
                                         join p in dbContext.Products on ol.ProductId equals p.ProductId
                                         where o.OrderId == orderId
                                         select new OrderProductDetail {
@@ -29,15 +30,15 @@ namespace AdformAPI.Repositories
                                             ProductQuantity = ol.ProductQuantity
                                         }) as IQueryable<OrderProductDetail>;
         }
-        public List<OrderlineDetail> GetOrderlines(int orderId)
+        public List<OrderLineDetail> GetOrderlines(int orderId)
         {
             return (from o in dbContext.Orders
-                         join ol in dbContext.Orderlines on o.OrderId equals ol.OrderId
+                         join ol in dbContext.OrderLines on o.OrderId equals ol.OrderId
                          join p in dbContext.Products on ol.ProductId equals p.ProductId
                          join d in dbContext.Discounts on p.ProductId equals d.ProductId into discount
                          from disc in discount.DefaultIfEmpty()
                          where o.OrderId == orderId
-                         select new OrderlineDetail
+                         select new OrderLineDetail
                          {
                              OrderName = o.OrderName,
                              ProductId = p.ProductId,
@@ -55,12 +56,13 @@ namespace AdformAPI.Repositories
             dbContext.Orders.Add(order);
             return order;
         }
-        public void CreateOrderlines(int orderId, int[] productIds, int[] productQuantities)
+        public void CreateOrderLines(int orderId, int[] productIds, int[] productQuantities)
         {
-            List<Orderline> orderlines = new List<Orderline>();
+            List<OrderLine> orderlines = new List<OrderLine>();
             for (int i = 0; i < productIds.Count(); i++)
             {
-                orderlines.Add(new Orderline {
+                orderlines.Add(new OrderLine
+                {
                     OrderId = orderId,
                     ProductId = productIds[i],
                     ProductQuantity = productQuantities[i]
@@ -74,7 +76,7 @@ namespace AdformAPI.Repositories
             try
             {
                 dbContext.SaveChanges();
-            } catch (DbException ex){
+            } catch (DbUpdateException ex){
                 response.StatusCode = 803;
                 response.Message = ex.InnerException.Message;
                 throw new ApiException(response.StatusCode, response.Message);

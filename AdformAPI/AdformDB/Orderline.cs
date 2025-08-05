@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace AdformAPI.AdformDB;
 
-public partial class Orderline
+public partial class OrderLine
 {
-    public int OrderlineId { get; set; }
+    public int OrderLineId { get; set; }
 
     public int OrderId { get; set; }
 
