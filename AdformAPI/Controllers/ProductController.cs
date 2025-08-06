@@ -1,5 +1,4 @@
-﻿using AdformAPI.AdformDB;
-using AdformAPI.Models;
+﻿using AdformAPI.Models;
 using AdformAPI.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -108,7 +107,7 @@ namespace AdformAPI.Controllers
         ///     {
         ///         "productId": 1
         ///         "discountPercentage": 10
-        ///         "MinimalQuantity": 10
+        ///         "minimalQuantity": 10
         ///     }
         /// </remarks>
         /// <param name="newProductDiscount"></param>

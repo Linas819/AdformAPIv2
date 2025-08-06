@@ -43,5 +43,5 @@ create table order_lines (
 		check(product_quantity > 0)
 );
 
-create index orderlines_order_id_idx on orderlines(order_id); 
-create index orderlines_product_id_idx on orderlines(product_id); 
+create index order_lines_order_id_idx on order_lines(order_id); 
+create index order_lines_product_id_idx on order_lines(product_id); 

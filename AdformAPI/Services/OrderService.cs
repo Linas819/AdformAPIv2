@@ -3,7 +3,6 @@ using AdformAPI.Exceptions;
 using AdformAPI.Models;
 using AdformAPI.Repositories;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
 
 namespace AdformAPI.Services
 {
@@ -30,7 +29,7 @@ namespace AdformAPI.Services
                     .ToList();
             if (ords.Count() == 0)
                 throw new ApiException(404, "No orders found");
-            foreach (Order ord in ords) 
+            foreach (Order ord in ords)
             {
                 OrderDetail order = new OrderDetail();
                 IQueryable<OrderProductDetail> orderProductsQuery = repository.GetOrderProducts(ord.OrderId, productPage * productPageSize, productPageSize);
@@ -55,8 +54,10 @@ namespace AdformAPI.Services
             OrderInvoice orderInvoice = new OrderInvoice();
             orderInvoice.OrderId = orderId;
             orderInvoice.OrderName = orderLineDetails.First().OrderName;
-            foreach (OrderLineDetail line in orderLineDetails) {
-                orderInvoice.Products.Add(new OrderInvoiceProductDetail { 
+            foreach (OrderLineDetail line in orderLineDetails)
+            {
+                orderInvoice.Products.Add(new OrderInvoiceProductDetail
+                {
                     ProductId = line.ProductId,
                     ProductName = line.ProductName,
                     ProductPrice = line.ProductPrice,
@@ -65,14 +66,14 @@ namespace AdformAPI.Services
                     DiscountMinimalQuantity = line.DiscountMinimalQuantity,
                 });
             }
-            orderInvoice.TotalPrice = orderInvoice.Products.Sum(x => DiscountedPrice(x.ProductPrice, x.DiscountPercentage, x.DiscountMinimalQuantity, x.ProductQuantity ));
+            orderInvoice.TotalPrice = orderInvoice.Products.Sum(x => DiscountedPrice(x.ProductPrice, x.DiscountPercentage, x.DiscountMinimalQuantity, x.ProductQuantity));
             return orderInvoice;
         }
         public DatabaseSaveChangesResponse CreateOrder(NewOrder newOrder)
         {
             if (newOrder.ProductIds.Count() != newOrder.ProductQuantities.Count())
                 throw new ApiException(400, "Product IDs count must match product quantities count");
-            if(newOrder.ProductIds.Count() == 0)
+            if (newOrder.ProductIds.Count() == 0)
                 throw new ApiException(400, "No product IDs provided");
             if (newOrder.ProductQuantities.Count() == 0)
                 throw new ApiException(400, "No product quantities provided");

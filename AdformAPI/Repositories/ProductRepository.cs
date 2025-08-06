@@ -26,18 +26,18 @@ namespace AdformAPI.Repositories
         public List<DiscountProductOrderLine> GetDiscountProductOrderLines(int discountId)
         {
             List<DiscountProductOrderLine> orderLine = (from d in dbContext.Discounts
-                         join p in dbContext.Products on d.ProductId equals p.ProductId
-                         join ol in dbContext.OrderLines on p.ProductId equals ol.ProductId into ordline
-                         from ordl in ordline.DefaultIfEmpty()
-                         where d.DiscountId == discountId && (ordl == null || ordl.ProductQuantity > d.MinimalQuantity)
-                         select new DiscountProductOrderLine
-                         {
-                             ProductName = p.ProductName,
-                             DiscountPercentage = d.DiscountPercentage,
-                             ProductQuantity = ordl != null ? ordl.ProductQuantity : 0,
-                             OrderId = ordl != null ? ordl.OrderId : 0,
-                             ProductPrice = p.ProductPrice
-                         }).ToList();
+                                                        join p in dbContext.Products on d.ProductId equals p.ProductId
+                                                        join ol in dbContext.OrderLines on p.ProductId equals ol.ProductId into ordline
+                                                        from ordl in ordline.DefaultIfEmpty()
+                                                        where d.DiscountId == discountId && (ordl == null || ordl.ProductQuantity >= d.MinimalQuantity)
+                                                        select new DiscountProductOrderLine
+                                                        {
+                                                            ProductName = p.ProductName,
+                                                            DiscountPercentage = d.DiscountPercentage,
+                                                            ProductQuantity = ordl != null ? ordl.ProductQuantity : 0,
+                                                            OrderId = ordl != null ? ordl.OrderId : 0,
+                                                            ProductPrice = p.ProductPrice
+                                                        }).ToList();
             return orderLine;
         }
         public Product CreateProduct(NewProduct newProduct)
@@ -65,7 +65,7 @@ namespace AdformAPI.Repositories
             }
             catch (DbUpdateException ex)
             {
-                response.StatusCode = 803;
+                response.StatusCode = 803; // SQL incorrect data upload error / contraint error
                 response.Message = ex.InnerException.Message;
                 throw new ApiException(response.StatusCode, response.Message);
             }

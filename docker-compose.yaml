@@ -9,10 +9,10 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: admin
     volumes:
-    - ./DatabaseTables.sql:/docker-entrypoint-initdb.d/DatabaseTables.sql:ro
+    - ./SqlScripts/DatabaseTables.sql:/docker-entrypoint-initdb.d/DatabaseTables.sql:ro
   webapi:
     build:
-      context: ./
+      context: ./AdformAPI
       dockerfile: Dockerfile
     container_name: webapi
     ports:

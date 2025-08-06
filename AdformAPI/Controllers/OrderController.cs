@@ -39,7 +39,8 @@ namespace AdformAPI.Controllers
         /// <response code="400">Incorrect (product)page(size) set</response>
         /// <returns> Order information and a list of products in the order</returns>
         [HttpGet]
-        public IActionResult GetOrders(int page = 0, int pageSize = 0, int productPage = 0, int productPageSize = 0) {
+        public IActionResult GetOrders(int page = 0, int pageSize = 0, int productPage = 0, int productPageSize = 0)
+        {
             List<OrderDetail> orders = new List<OrderDetail>();
             orders = orderService.GetOrders(page, pageSize, productPage, productPageSize);
             return (Ok(new

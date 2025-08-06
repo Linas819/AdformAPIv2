@@ -13,6 +13,8 @@ namespace AdformAPI.Services
         }
         public List<ProductDetail> GetProducts(string productName, int page, int pageSize)
         {
+            if (page < 0 || pageSize < 0)
+                throw new ApiException(500, "Page and/or page size cannot be lower than 0");
             int dataLimit = page * pageSize;
             IQueryable<ProductDetail> productDetailsQuery = productRepository.GetProducts(productName);
             List<ProductDetail> products = dataLimit == 0
@@ -35,7 +37,7 @@ namespace AdformAPI.Services
             productDiscount.ProductName = orderLines.First().ProductName;
             productDiscount.DiscountPercentage = orderLines.First().DiscountPercentage;
             productDiscount.OrderCount = orderLines.Where(x => x.OrderId != 0).Select(x => x.OrderId).Distinct().Count();
-            productDiscount.TotalAmount = orderLines.Sum(x => x.ProductQuantity * (x.ProductPrice - 
+            productDiscount.TotalAmount = orderLines.Sum(x => x.ProductQuantity * (x.ProductPrice -
                 (x.ProductPrice * ((double)x.DiscountPercentage / 100))));
             return productDiscount;
         }

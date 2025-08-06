@@ -21,8 +21,8 @@ builder.Services.AddSwaggerGen(options =>
     options.SwaggerDoc("v1", new OpenApiInfo
     {
         Version = "v1",
-        Title = "AdForm SQL API",
-        Description = "An ASP.NET Core Web API for AdForm SQL exercise"
+        Title = "Adform API",
+        Description = "An ASP.NET Core Web API for Adform API exercise"
     });
     var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);

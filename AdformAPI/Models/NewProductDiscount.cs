@@ -1,6 +1,4 @@
-﻿using AdformAPI.AdformDB;
-
-namespace AdformAPI.Models
+﻿namespace AdformAPI.Models
 {
     public class NewProductDiscount
     {

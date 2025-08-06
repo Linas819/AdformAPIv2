@@ -1,10 +1,8 @@
-﻿using AdformAPI.AdformDB;
-
-namespace AdformAPI.Models
+﻿namespace AdformAPI.Models
 {
     public class NewProduct
     {
         public string ProductName { get; set; } = "";
-        public float ProductPrice { get; set; }
+        public double ProductPrice { get; set; }
     }
 }
